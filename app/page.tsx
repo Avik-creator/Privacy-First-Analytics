@@ -121,7 +121,7 @@ export default function Home() {
           />
 
           {/* Main Content */}
-          <div className="flex-1 lg:ml-80">
+          <div className="flex-1 lg:ml-80 min-w-0">
             <MainContent
               tables={tables}
               selectedTable={selectedTable}

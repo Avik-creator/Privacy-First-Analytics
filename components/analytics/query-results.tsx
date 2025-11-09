@@ -110,11 +110,11 @@ export function QueryResults({ results }: QueryResultsProps) {
       filtered = [...filtered].sort((a, b) => {
         const aVal = a[sortColumn]
         const bVal = b[sortColumn]
-        
+
         if (aVal === bVal) return 0
         if (aVal === null || aVal === undefined) return 1
         if (bVal === null || bVal === undefined) return -1
-        
+
         const comparison = aVal < bVal ? -1 : 1
         return sortDirection === "asc" ? comparison : -comparison
       })
@@ -238,7 +238,7 @@ export function QueryResults({ results }: QueryResultsProps) {
                 <CardDescription className="flex items-center gap-4 mt-1">
                   <span>
                     {quickStats.filteredRows} row{quickStats.filteredRows !== 1 ? "s" : ""}
-                    {quickStats.filteredRows !== quickStats.totalRows && 
+                    {quickStats.filteredRows !== quickStats.totalRows &&
                       ` (filtered from ${quickStats.totalRows})`}
                   </span>
                   <span className="text-xs">•</span>
@@ -396,10 +396,10 @@ export function QueryResults({ results }: QueryResultsProps) {
 
                 {/* Table with fixed height and sticky header */}
                 <div className="border border-border rounded-lg overflow-hidden">
-                  <div className="overflow-auto max-h-[500px]">
-                    <table className="w-full text-sm">
-                      <thead className="sticky top-0 z-10">
-                        <tr className="border-b border-border bg-muted">
+                  <div className="overflow-x-auto overflow-y-auto max-h-[500px]">
+                    <table className="w-full text-sm border-collapse">
+                      <thead className="sticky top-0 z-10 bg-muted">
+                        <tr className="border-b border-border">
                           {columns.map((col) => (
                             <th
                               key={col}
@@ -412,17 +412,17 @@ export function QueryResults({ results }: QueryResultsProps) {
                                 })
                               }}
                               onMouseLeave={() => setHoveredColumn(null)}
-                              className="text-left p-3 font-semibold text-foreground cursor-pointer hover:bg-accent transition-colors group relative"
+                              className="text-left p-3 font-semibold text-foreground cursor-pointer hover:bg-accent transition-colors group relative min-w-[120px] max-w-[250px]"
                             >
-                              <div className="flex items-center gap-2">
-                                <span className="truncate">{col}</span>
-                                <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                              <div className="flex items-center gap-2 whitespace-nowrap">
+                                <span className="truncate" title={col}>{col}</span>
+                                <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                                 {sortColumn === col && (
-                                  <span className="text-primary">
+                                  <span className="text-primary flex-shrink-0">
                                     {sortDirection === "asc" ? "↑" : "↓"}
                                   </span>
                                 )}
-                                <Info className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground" />
+                                <Info className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground flex-shrink-0" />
                               </div>
                             </th>
                           ))}
@@ -435,16 +435,16 @@ export function QueryResults({ results }: QueryResultsProps) {
                               <td
                                 key={col}
                                 onClick={() => handleCopyCell(row[col])}
-                                className="p-3 text-xs font-mono cursor-pointer hover:bg-accent group relative"
-                                title="Click to copy"
+                                className="p-3 text-xs cursor-pointer hover:bg-accent group relative min-w-[120px] max-w-[250px]"
+                                title={`${col}: ${typeof row[col] === "object" ? JSON.stringify(row[col]) : String(row[col] ?? "")} (click to copy)`}
                               >
                                 <div className="flex items-center gap-2">
-                                  <span className="truncate max-w-xs">
-                                    {typeof row[col] === "object" 
-                                      ? JSON.stringify(row[col]) 
+                                  <span className="truncate block">
+                                    {typeof row[col] === "object"
+                                      ? JSON.stringify(row[col])
                                       : String(row[col] ?? "")}
                                   </span>
-                                  <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground" />
+                                  <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground flex-shrink-0" />
                                 </div>
                               </td>
                             ))}
