@@ -28,7 +28,7 @@ export function Header({ showBackButton = false, onBack }: HeaderProps) {
               </div>
               <div>
                 <h1 className="text-xl font-bold tracking-tight">
-                  Privacy-First Analytics
+                  Quacklytics
                 </h1>
                 {!showBackButton && (
                   <p className="text-xs text-muted-foreground">

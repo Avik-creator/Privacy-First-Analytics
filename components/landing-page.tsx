@@ -22,7 +22,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
           {/* Main Heading */}
           <div className="space-y-4">
             <h1 className="text-5xl lg:text-7xl font-bold tracking-tight bg-linear-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-              Privacy-First Analytics
+              Quacklytics
             </h1>
             <p className="text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto">
               Query your data locally in the browser. Zero server involvement. Complete privacy. Lightning fast.
@@ -71,7 +71,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-6xl mx-auto">
           <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold">Why Choose Privacy-First Analytics?</h2>
+            <h2 className="text-3xl lg:text-4xl font-bold">Why Choose Quacklytics?</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Experience the power of SQL analytics without compromising your data privacy
             </p>
