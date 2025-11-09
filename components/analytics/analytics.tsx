@@ -64,8 +64,8 @@ export function Analytics({
     }).length
     
     if (previous24h === 0) return last24h > 0 ? "+100%" : null
-    const growth = ((last24h - previous24h) / previous24h * 100).toFixed(0)
-    return growth === "0" ? null : `${growth > 0 ? "+" : ""}${growth}%`
+    const growth = (last24h - previous24h) / previous24h * 100
+    return growth === 0 ? null : `${growth > 0 ? "+" : ""}${growth.toFixed(0)}%`
   }, [queryHistory])
 
   return (

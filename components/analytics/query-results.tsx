@@ -283,10 +283,7 @@ export function QueryResults({ results }: QueryResultsProps) {
                     </button>
                     <button
                       onClick={() => setChartType("advanced")}
-                      className={`px-3 py-1.5 text-sm rounded border transition ${chartType === "advanced"
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "border-border hover:bg-accent"
-                        }`}
+                      className="px-3 py-1.5 text-sm rounded border transition border-border hover:bg-accent"
                     >
                       Advanced
                     </button>
