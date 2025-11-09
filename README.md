@@ -268,6 +268,27 @@ analytics-engine/
 └── public/                 # Static assets
 ```
 
+## Architecture
+
+┌────────────┐
+│  CSV/JSON  │
+└──────┬─────┘
+       │
+       ▼
+  DuckDB WASM Engine
+       │
+       ▼
+ ┌───────────────┐
+ │  SQL Editor   │
+ │ + Query Cache │
+ └──────┬────────┘
+        ▼
+  Results → Charts → Export
+        │
+        ▼
+   Local Storage / IndexedDB
+
+
 ## 🔒 Privacy & Security
 
 ### Data Privacy
