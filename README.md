@@ -270,6 +270,7 @@ analytics-engine/
 
 ## Architecture
 
+```
 ┌────────────┐
 │  CSV/JSON  │
 └──────┬─────┘
@@ -287,6 +288,7 @@ analytics-engine/
         │
         ▼
    Local Storage / IndexedDB
+```
 
 
 ## 🔒 Privacy & Security
