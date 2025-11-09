@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Privacy-First Analytics | Browser-Based SQL Analytics",
+  title: "Quacklytics",
   description: "Query your data locally with complete privacy. Powered by DuckDB WASM. Zero server involvement.",
   openGraph: {
-    title: "Privacy-First Analytics | Browser-Based SQL Analytics",
+    title: "Quacklytics",
     description: "Query your data locally with complete privacy. Powered by DuckDB WASM. Zero server involvement.",
     tags: ["analytics", "sql", "duckdb", "wasm", "privacy", "browser-based", "zero-server-involvement"],
     images: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Privacy-First Analytics | Browser-Based SQL Analytics",
+    title: "Quacklytics",
     description: "Query your data locally with complete privacy. Powered by DuckDB WASM. Zero server involvement.",
     images: ["/og-image.png"],
   },

@@ -1,4 +1,4 @@
-# Privacy-First Analytics Engine 🦆
+# Quacklytics 🦆
 
 A powerful, browser-based SQL analytics platform powered by DuckDB WASM. Query your data locally with complete privacy - zero server involvement, your data never leaves your device.
 
