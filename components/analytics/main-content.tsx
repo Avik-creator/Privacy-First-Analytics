@@ -4,6 +4,7 @@ import { QueryEditor } from "@/components/analytics/query-editor"
 import { QueryResults } from "@/components/analytics/query-results"
 import { QueryBuilder } from "@/components/analytics/query-builder"
 import { SavedQueries } from "@/components/analytics/saved-queries"
+import { AIAssistant } from "@/components/analytics/ai-assistant"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAnalyticsStore } from "@/lib/store"
 import type { QueryResults as QueryResultsType, QueryHistory, TableSchemas } from "@/lib/types"
@@ -47,11 +48,19 @@ export function MainContent({
     setActiveTab("query")
   }
 
+  const handleAIQueryGenerated = (query: string) => {
+    setCurrentQuery(query)
+    const editor = document.getElementById("query-editor") as HTMLTextAreaElement
+    if (editor) editor.value = query
+    setActiveTab("query")
+  }
+
   return (
     <div className="p-4 lg:p-8 space-y-6 overflow-hidden">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="query">Query</TabsTrigger>
+          <TabsTrigger value="ai">AI Assistant</TabsTrigger>
           <TabsTrigger value="builder">Builder</TabsTrigger>
           <TabsTrigger value="saved">Saved</TabsTrigger>
           <TabsTrigger value="results">Results</TabsTrigger>
@@ -68,7 +77,14 @@ export function MainContent({
             onResults={onResults}
             onQuery={onQuery}
             history={history}
+            initialQuery={currentQuery}
           />
+        </TabsContent>
+
+        <TabsContent value="ai" className="space-y-4">
+          <div className="h-[600px]">
+            <AIAssistant onQueryGenerated={handleAIQueryGenerated} />
+          </div>
         </TabsContent>
 
         <TabsContent value="builder" className="space-y-4">

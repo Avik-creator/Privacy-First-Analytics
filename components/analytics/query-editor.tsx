@@ -18,6 +18,7 @@ interface QueryEditorProps {
   onResults: (results: QueryResults | null) => void
   onQuery: (query: string, cached?: boolean, time?: number, success?: boolean) => void
   history: QueryHistory[]
+  initialQuery?: string
 }
 
 export function QueryEditor({
@@ -29,12 +30,20 @@ export function QueryEditor({
   onResults,
   onQuery,
   history,
+  initialQuery,
 }: QueryEditorProps) {
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [executionTime, setExecutionTime] = useState<number | null>(null)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [cacheHit, setCacheHit] = useState(false)
+
+  // Update editor when initialQuery changes
+  useEffect(() => {
+    if (initialQuery && editorRef.current) {
+      editorRef.current.value = initialQuery
+    }
+  }, [initialQuery])
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {

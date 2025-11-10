@@ -57,6 +57,15 @@ export interface ChartDataPoint {
   [key: string]: string | number
 }
 
+// AI Provider Types
+export type AIProvider = 'groq' | 'ollama'
+
+export interface AISettings {
+  provider: AIProvider
+  model: string
+  enabled: boolean
+}
+
 // Analytics Store Types
 export interface AnalyticsState {
   history: QueryHistory[]
@@ -68,6 +77,7 @@ export interface AnalyticsState {
   isLoading: boolean
   activeTab: string
   commandPaletteOpen: boolean
+  aiSettings: AISettings
 }
 
 export interface AnalyticsActions {
@@ -81,6 +91,7 @@ export interface AnalyticsActions {
   setIsLoading: (loading: boolean) => void
   setActiveTab: (tab: string) => void
   setCommandPaletteOpen: (open: boolean) => void
+  setAISettings: (settings: Partial<AISettings>) => void
 }
 
 export type AnalyticsStore = AnalyticsState & AnalyticsActions

@@ -27,6 +27,13 @@ A powerful, browser-based SQL analytics platform powered by DuckDB WASM. Query y
 - 🔄 **Query History**: Track and reuse past queries
 - 🎨 **Chart Customization**: Interactive chart builder
 
+### AI-Powered Features ✨ NEW
+- 🤖 **Natural Language to SQL**: Ask questions in plain English, get SQL queries
+- 🔄 **Dual Provider Support**: Choose between hosted (Groq) or self-hosted (Ollama)
+- 💬 **AI Chat Assistant**: Interactive chat interface for query generation
+- 🎯 **Context-Aware**: Automatically uses your table schemas for accurate queries
+- ⚡ **Real-time Streaming**: See AI responses as they're generated
+
 ## 🚀 Quick Start
 
 ### Installation
@@ -39,11 +46,43 @@ cd analytics-engine
 # Install dependencies
 pnpm install
 
+# Configure AI providers (optional)
+cp .env.example .env.local
+# Edit .env.local and add your API keys
+
 # Start development server
 pnpm dev
 ```
 
 Visit `http://localhost:3000` to see the application.
+
+### AI Assistant Setup (Optional)
+
+The AI Assistant helps you generate SQL queries using natural language. You can choose between two options:
+
+#### Option 1: Groq (Hosted - Recommended)
+1. Get a free API key from [Groq Console](https://console.groq.com/keys)
+2. Create a `.env.local` file in the project root:
+```bash
+GROQ_API_KEY=your_groq_api_key_here
+```
+3. Restart the development server
+4. Open the AI Assistant tab and select "Groq (Hosted)"
+
+#### Option 2: Ollama (Self-Hosted)
+1. Install [Ollama](https://ollama.com/) on your machine
+2. Pull a model:
+```bash
+ollama pull llama3.1
+```
+3. (Optional) Configure custom Ollama URL in `.env.local`:
+```bash
+OLLAMA_BASE_URL=http://localhost:11434/api
+```
+4. Open the AI Assistant tab and select "Ollama (Local)"
+5. Enter your model name (e.g., `llama3.1`, `mistral`, `codellama`)
+
+**Note**: The AI Assistant is completely optional. The analytics engine works perfectly without it!
 
 ### First Query
 
@@ -53,6 +92,38 @@ Visit `http://localhost:3000` to see the application.
 4. **Visualize**: Switch between table, chart, and advanced views
 
 ## 📖 Usage Guide
+
+### AI Assistant Usage
+
+The AI Assistant can help you write SQL queries using natural language:
+
+1. **Access the Assistant**: Click the "AI Assistant" tab
+2. **Choose Provider**: 
+   - **Groq (Hosted)**: Fast, reliable, requires API key (free tier available)
+   - **Ollama (Local)**: Private, runs on your machine, requires Ollama installation
+3. **Ask Questions**: 
+   - "Show me total sales by category"
+   - "Find the top 10 customers by order count"
+   - "What are the average order values per month?"
+4. **Review Generated SQL**: The AI will generate and explain the SQL query
+5. **Execute Query**: Click the play button to insert the query into the editor and switch to the Query tab
+
+#### Example Conversations
+
+```
+You: Show me the top 5 products by revenue
+AI: [Generates SQL with explanation]
+    SELECT product_name, SUM(price * quantity) as revenue
+    FROM orders
+    GROUP BY product_name
+    ORDER BY revenue DESC
+    LIMIT 5;
+```
+
+```
+You: Calculate the average order value per customer
+AI: [Generates query with AVG and GROUP BY]
+```
 
 ### Uploading Data
 
@@ -230,6 +301,11 @@ Visual query builder for non-SQL users:
 
 - **Framework**: Next.js 16 (React 19)
 - **Database**: DuckDB WASM 1.30.0
+- **AI Integration**: 
+  - AI SDK (Vercel AI SDK)
+  - Groq Provider (@ai-sdk/groq)
+  - Ollama Provider (ollama-ai-provider-v2)
+  - Zod for schema validation
 - **State Management**: Zustand with persist middleware
 - **Styling**: Tailwind CSS v4 with OKLCH colors
 - **Charts**: Recharts 3.3.0
@@ -242,12 +318,16 @@ Visual query builder for non-SQL users:
 ```
 analytics-engine/
 ├── app/
+│   ├── api/
+│   │   └── chat/
+│   │       └── route.ts    # AI chat API endpoint
 │   ├── layout.tsx          # Root layout with theme provider
 │   ├── page.tsx             # Main application page
 │   └── globals.css          # Global styles
 ├── components/
 │   ├── analytics/          # Analytics-related components
 │   │   ├── analytics.tsx   # Main analytics dashboard
+│   │   ├── ai-assistant.tsx # AI chat interface
 │   │   ├── query-editor.tsx
 │   │   ├── query-results.tsx
 │   │   ├── data-stats.tsx
@@ -314,11 +394,17 @@ analytics-engine/
 
 ## 🚧 Roadmap
 
+### Completed Features ✅
+- [x] Natural Language to SQL (AI-powered)
+- [x] Query generation with context awareness
+- [x] Dual provider support (Groq + Ollama)
+
 ### Planned Features
+- [ ] Query explanation in plain English (using AI)
+- [ ] Automatic query optimization suggestions
+- [ ] AI-powered data insights and anomaly detection
 - [ ] Parquet file import/export
 - [ ] Excel (.xlsx) import/export
-- [ ] Natural Language to SQL (AI-powered)
-- [ ] Query explanation in plain English
 - [ ] Pivot tables
 - [ ] Data transformations UI
 - [ ] Query collaboration (share via link)
@@ -407,6 +493,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - [DuckDB](https://duckdb.org/) - Amazing in-process SQL database
 - [Next.js](https://nextjs.org/) - React framework
+- [Vercel AI SDK](https://sdk.vercel.ai/) - AI integration framework
+- [Groq](https://groq.com/) - Fast AI inference
+- [Ollama](https://ollama.com/) - Local AI models
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
 - [Recharts](https://recharts.org/) - Charting library
 - [shadcn/ui](https://ui.shadcn.com/) - UI components inspiration

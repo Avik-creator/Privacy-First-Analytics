@@ -15,6 +15,11 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
       isLoading: false,
       activeTab: "query",
       commandPaletteOpen: false,
+      aiSettings: {
+        provider: "groq",
+        model: "llama-3.3-70b-versatile",
+        enabled: false
+      },
 
       // Actions
       addQuery: (query: string) =>
@@ -57,6 +62,11 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
       setActiveTab: (tab: string) => set({ activeTab: tab }),
 
       setCommandPaletteOpen: (open: boolean) => set({ commandPaletteOpen: open }),
+
+      setAISettings: (settings) =>
+        set((state) => ({
+          aiSettings: { ...state.aiSettings, ...settings },
+        })),
     }),
     {
       name: "analytics-storage",
@@ -64,6 +74,7 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
       partialize: (state) => ({
         history: state.history,
         queryStats: state.queryStats,
+        aiSettings: state.aiSettings,
       }),
     }
   )

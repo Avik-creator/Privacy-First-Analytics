@@ -3,7 +3,7 @@ import type { QueryResults } from "./types"
 export async function exportToCSV(results: QueryResults, filename?: string): Promise<void> {
   const csv = [
     results.columns.join(","),
-    ...results.rows.map((row) => 
+    ...results.rows.map((row) =>
       results.columns.map((col) => {
         const value = row[col]
         if (value === null || value === undefined) return ""
@@ -39,10 +39,7 @@ export async function exportToParquet(
     // Use DuckDB to export to Parquet
     const query = `COPY ${tableName} TO '${filename || `export-${Date.now()}.parquet`}' (FORMAT PARQUET)`
     await connection.run(query)
-    
-    // Note: In browser environment, we need to handle this differently
-    // This is a placeholder for the actual implementation
-    console.log("Parquet export initiated. Check your DuckDB virtual filesystem.")
+
   } catch (error) {
     console.error("Parquet export error:", error)
     throw new Error("Parquet export is not yet fully supported in the browser")
@@ -61,7 +58,7 @@ export async function exportToMarkdown(results: QueryResults, filename?: string)
   const header = `| ${results.columns.map((col, idx) => col.padEnd(columnWidths[idx])).join(" | ")} |`
   const separator = `| ${columnWidths.map((w) => "-".repeat(w)).join(" | ")} |`
   const rows = results.rows.map((row) =>
-    `| ${results.columns.map((col, idx) => 
+    `| ${results.columns.map((col, idx) =>
       String(row[col] ?? "").padEnd(columnWidths[idx])
     ).join(" | ")} |`
   )
@@ -99,14 +96,14 @@ export async function exportToHTML(results: QueryResults, filename?: string): Pr
     </thead>
     <tbody>
       ${results.rows
-        .map(
-          (row) => `
+      .map(
+        (row) => `
         <tr>
           ${results.columns.map((col) => `<td>${escapeHtml(String(row[col] ?? ""))}</td>`).join("")}
         </tr>
       `
-        )
-        .join("")}
+      )
+      .join("")}
     </tbody>
   </table>
 </body>
