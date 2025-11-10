@@ -18,24 +18,58 @@ interface AIAssistantProps {
 export function AIAssistant({ onQueryGenerated, chatId: propChatId, onChatIdChange }: AIAssistantProps) {
   const [input, setInput] = useState("")
   const [showSettings, setShowSettings] = useState(false)
-  const [internalChatId, setInternalChatId] = useState<string>(() => propChatId || generateId())
+  const [loadedMessages, setLoadedMessages] = useState<any[]>([])
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true)
+  const [isChatInitialized, setIsChatInitialized] = useState(false)
   const { aiSettings, setAISettings, tableSchemas, selectedTable } = useAnalyticsStore()
 
-  // Use prop chatId if provided, otherwise use internal state
-  const activeChatId = propChatId || internalChatId
+  // Use prop chatId if provided, otherwise use stored chatId, or generate a new one
+  const activeChatId = propChatId || aiSettings.chatId || (() => {
+    const newId = generateId()
+    setAISettings({ chatId: newId })
+    return newId
+  })()
+
+  // Load messages from storage when chat ID changes
+  useEffect(() => {
+    const loadMessages = async () => {
+      setIsLoadingMessages(true)
+      setIsChatInitialized(false)
+      try {
+        const response = await fetch(`/api/chat/load?chatId=${activeChatId}`)
+        if (response.ok) {
+          const data = await response.json()
+          const loadedMsgs = data.messages || []
+          console.log('Loaded messages from storage:', loadedMsgs)
+          setLoadedMessages(loadedMsgs)
+        } else {
+          setLoadedMessages([])
+        }
+      } catch (error) {
+        console.error('Failed to load messages:', error)
+        setLoadedMessages([])
+      } finally {
+        setIsLoadingMessages(false)
+        setIsChatInitialized(true)
+      }
+    }
+
+    loadMessages()
+  }, [activeChatId])
 
   // Notify parent of chat ID changes
   useEffect(() => {
     if (onChatIdChange && !propChatId) {
-      onChatIdChange(internalChatId)
+      onChatIdChange(activeChatId)
     }
-  }, [internalChatId, onChatIdChange, propChatId])
+  }, [activeChatId, onChatIdChange, propChatId])
 
   // Guard in case the store isn't ready yet
   const safeAISettings = aiSettings ?? { provider: "groq", model: "" }
 
   const { messages = [], sendMessage, status, setMessages } = useChat({
     id: activeChatId,
+    messages: loadedMessages, // Use loaded messages as initial messages
     transport: new DefaultChatTransport({
       api: "/api/chat",
       // Send only the last message to reduce payload
@@ -52,7 +86,13 @@ export function AIAssistant({ onQueryGenerated, chatId: propChatId, onChatIdChan
     }),
   })
 
-
+  // Update messages when loaded from storage
+  useEffect(() => {
+    if (isChatInitialized && loadedMessages.length > 0) {
+      console.log('Setting messages in useChat:', loadedMessages)
+      setMessages(loadedMessages)
+    }
+  }, [isChatInitialized, loadedMessages, setMessages])
 
   const isLoading = status === "streaming"
   const bottomRef = useRef<HTMLDivElement | null>(null)
@@ -134,15 +174,28 @@ export function AIAssistant({ onQueryGenerated, chatId: propChatId, onChatIdChan
 
   const handleNewChat = () => {
     const newChatId = generateId()
-    setInternalChatId(newChatId)
-    setMessages([])
+    setAISettings({ chatId: newChatId })
+    setLoadedMessages([])
+    setIsChatInitialized(false)
+    setIsLoadingMessages(true)
     if (onChatIdChange) {
       onChatIdChange(newChatId)
     }
   }
 
-  const handleClearChat = () => {
+  const handleClearChat = async () => {
     setMessages([])
+    setLoadedMessages([])
+    // Also clear from storage
+    try {
+      await fetch('/api/chat/clear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId: activeChatId }),
+      })
+    } catch (error) {
+      console.error('Failed to clear chat:', error)
+    }
   }
 
   // safe renderer helpers
@@ -224,7 +277,7 @@ export function AIAssistant({ onQueryGenerated, chatId: propChatId, onChatIdChan
   }
 
   return (
-    <Card className="flex flex-col h-full bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+    <Card key={activeChatId} className="flex flex-col h-full bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center gap-2">
@@ -291,11 +344,14 @@ export function AIAssistant({ onQueryGenerated, chatId: propChatId, onChatIdChan
                   value={safeAISettings.model}
                   onChange={(e) => setAISettings({ model: e.target.value })}
                 >
-                  <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
-                  <option value="llama-3.1-8b-instant">Llama 3.1 8B</option>
+                  <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Recommended)</option>
+                  <option value="llama-3.1-70b-versatile">Llama 3.1 70B</option>
+                  <option value="llama-3.2-90b-text-preview">Llama 3.2 90B</option>
                   <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                  <option value="gemma2-9b-it">Gemma 2 9B</option>
                 </select>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                  Larger models have better tool calling support
+                </p>
               </div>
             )}
 
@@ -320,13 +376,17 @@ export function AIAssistant({ onQueryGenerated, chatId: propChatId, onChatIdChan
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 && (
+        {isLoadingMessages ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
+          </div>
+        ) : messages.length === 0 ? (
           <div className="text-center text-zinc-500 dark:text-zinc-400 py-12">
             <Brain className="w-12 h-12 mx-auto mb-4 text-zinc-300 dark:text-zinc-700" />
             <p className="text-sm">Ask me anything about your data!</p>
             <p className="text-xs mt-2">Try: &quot;Show me total sales by category&quot; or &quot;Find the top 10 customers&quot;</p>
           </div>
-        )}
+        ) : null}
 
         {messages.map((message: any) => (
           <div key={message.id ?? Math.random()} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>

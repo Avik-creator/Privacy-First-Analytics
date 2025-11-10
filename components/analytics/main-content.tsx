@@ -250,7 +250,7 @@ function TemplateCard({
       <div className="text-xs text-muted-foreground mb-2">{description}</div>
       {query && (
         <div className="text-xs font-mono text-muted-foreground bg-muted p-2 rounded border border-border overflow-x-auto max-h-20 overflow-y-auto">
-          <pre className="whitespace-pre-wrap break-words">{query}</pre>
+          <pre className="whitespace-pre-wrap wrap-break-word">{query}</pre>
         </div>
       )}
     </button>

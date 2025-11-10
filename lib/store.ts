@@ -18,7 +18,8 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
       aiSettings: {
         provider: "groq",
         model: "llama-3.3-70b-versatile",
-        enabled: false
+        enabled: false,
+        chatId: undefined,
       },
 
       // Actions

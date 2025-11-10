@@ -64,6 +64,7 @@ export interface AISettings {
   provider: AIProvider
   model: string
   enabled: boolean
+  chatId?: string
 }
 
 // Analytics Store Types

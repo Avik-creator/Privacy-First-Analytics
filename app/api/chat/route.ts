@@ -42,8 +42,8 @@ export async function POST(req: Request) {
       if (!apiKey) {
         return new Response('GROQ_API_KEY not configured', { status: 500 });
       }
-      // Default to llama-3.3-70b-versatile for best SQL generation
-      selectedModel = groq(model || 'llama3-8b-8192');
+      // Use models that support tool calling
+      selectedModel = groq(model || 'llama-3.3-70b-versatile');
     } else if (provider === 'ollama') {
       const ollama = createOllama({
         baseURL: process.env.OLLAMA_BASE_URL || 'http://localhost:11434/api',
@@ -99,19 +99,22 @@ export async function POST(req: Request) {
       system: `You are a helpful SQL assistant for a DuckDB analytics engine.
 You help users write SQL queries by understanding their natural language requests.
 
-IMPORTANT: Only use these exact tool names:
-- "generateSQL" - for generating SQL queries
-- "getTableInfo" - for getting table information
+When the user provides a table schema and asks a question, you should:
+1. Analyze the schema and understand the available columns
+2. Generate a SQL query using the "generateSQL" tool
+3. Provide the query, explanation, and table used
 
-Do NOT use any other tool names or add extra characters.
+Available tools:
+- generateSQL: Use this to generate SQL queries with proper DuckDB syntax
+- getTableInfo: Use this to get information about tables (rarely needed as schema is usually provided)
 
 When generating SQL queries:
 - Use DuckDB syntax
 - Always use proper table and column names based on the schema provided
 - Include appropriate WHERE clauses, GROUP BY, ORDER BY when needed
+- Use DISTINCT for unique counts
 - Suggest appropriate aggregations (SUM, AVG, COUNT, etc.)
-- Format queries in a readable way
-- Explain what the query does`,
+- Format queries in a readable way`,
       tools,
     });
 
